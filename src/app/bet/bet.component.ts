@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
+import { Legend } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { BetService } from './bet.service';
 
@@ -8,6 +9,7 @@ import { BetService } from './bet.service';
   templateUrl: './bet.component.html',
   styleUrls: ['./bet.component.css'],
 })
+
 export class BetComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
@@ -16,8 +18,25 @@ export class BetComponent implements OnInit, OnDestroy {
   mount: number = 0;
   processing = false;
 
+  barChartValuePlugin = {
+    id: 'barChartValuePlugin',
+    afterDatasetsDraw(chart: any, args: any, options: any) {
+      const { ctx } = chart;
+      chart.data.datasets.forEach((dataset: any, i: number) => {
+        const meta = chart.getDatasetMeta(i);
+        meta.data.forEach((bar: any, index: number) => {
+          const data = Math.trunc(dataset.data[index]);
+          ctx.fillStyle = '#000'; // Color del texto
+          ctx.font = '12px Arial'; // Fuente del texto
+          const position = bar.tooltipPosition();
+          ctx.fillText(data, position.x, position.y - 5);
+        });
+      });
+    },
+  };
+  
   public barChartLegend = true;
-  public barChartPlugins = [];
+  barChartPlugins: ChartConfiguration<'bar'>['plugins'] = [this.barChartValuePlugin];
 
   barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: ['Ballenita FC', 'Empate', 'Club Playas'],
@@ -33,6 +52,21 @@ export class BetComponent implements OnInit, OnDestroy {
 
   barChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top', // Opcional: 'top', 'bottom', 'left', 'right'
+        labels: {
+          font: {
+            size: 12, // Tamaño de fuente de las etiquetas de la leyenda
+          },
+          color: '#000', // Color de las etiquetas de la leyenda
+        },
+      },
+      tooltip: {
+        enabled: true, // Habilita las tooltips si las necesitas
+      },
+    },
   };
 
   constructor(private betService: BetService) { }
