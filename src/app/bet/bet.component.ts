@@ -1,17 +1,19 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
-import { Legend } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { BetService } from './bet.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-bet',
   templateUrl: './bet.component.html',
   styleUrls: ['./bet.component.css'],
 })
-
-export class BetComponent implements OnInit, OnDestroy {
+export class BetComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+
+  team1Name = environment.team1Name;
+  team2Name = environment.team2Name;
 
   statsValues: { [key: string]: number } = { ballenita: 0, both: 0, playas: 0 };
   winner: string = 'both';
@@ -34,20 +36,18 @@ export class BetComponent implements OnInit, OnDestroy {
       });
     },
   };
-  
+
   public barChartLegend = true;
   barChartPlugins: ChartConfiguration<'bar'>['plugins'] = [this.barChartValuePlugin];
 
   barChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: ['Ballenita FC', 'Empate', 'Club Playas'],
+    labels: [environment.team1Name, 'Empate', environment.team2Name],
     datasets: [
       {
         data: [this.statsValues['ballenita'], this.statsValues['both'], this.statsValues['playas']],
         label: 'Bets USD',
-        backgroundColor: ['#484888', '#808080', '#ed9202']
       }
     ],
-
   };
 
   barChartOptions: ChartConfiguration<'bar'>['options'] = {
@@ -81,8 +81,33 @@ export class BetComponent implements OnInit, OnDestroy {
 
     this.update_chart();
   }
-  ngOnDestroy(): void {
 
+  ngAfterViewInit(): void {
+    this.setChartGradient();
+  }
+
+  ngOnDestroy(): void { }
+
+  setChartGradient(): void {
+    if (this.chart?.chart?.ctx && this.chart?.chart?.chartArea) {
+      const chart = this.chart.chart;
+      const { ctx, chartArea } = chart;
+
+      const gradient1 = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+      gradient1.addColorStop(0, environment.team1GradientStart);
+      gradient1.addColorStop(1, environment.team1GradientEnd);
+
+      const gradient2 = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+      gradient2.addColorStop(0, environment.tieGradientStart);
+      gradient2.addColorStop(1, environment.tieGradientEnd);
+
+      const gradient3 = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+      gradient3.addColorStop(0, environment.team2GradientStart);
+      gradient3.addColorStop(1, environment.team2GradientEnd);
+
+      this.barChartData.datasets[0].backgroundColor = [gradient1, gradient2, gradient3];
+      this.chart.update();
+    }
   }
 
   bet = () => {
@@ -98,8 +123,8 @@ export class BetComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           console.info('bet complete.');
-          this.processing = false;
           this.update_chart();
+          this.processing = false;
         }
       });
   };
@@ -121,6 +146,5 @@ export class BetComponent implements OnInit, OnDestroy {
       this.chart?.update();
     });
   }
-
 }
 
