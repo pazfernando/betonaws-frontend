@@ -1,0 +1,44 @@
+/* Estilos para las banderas */
+.flag-img {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+}
+
+/* Estilos para el formulario */
+.bet-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Ajustes para los radio buttons */
+.form-check {
+  margin-bottom: 8px;
+}
+
+/* Ajustes para el gráfico */
+.bar-chart-container {
+  position: relative;
+  margin: 20px 0;
+}
+
+/* Estilos para los valores en las barras */
+.bar-value {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 576px) {
+  .bet-form {
+    padding: 0 15px;
+  }
+  
+  .flag-img {
+    width: 20px;
+    height: 14px;
+  }
+}

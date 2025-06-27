@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./bet.component.css'],
 })
 export class BetComponent implements OnInit, OnDestroy, AfterViewInit {
+  environment = environment; // Hacer el entorno disponible en la plantilla
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   team1Name = environment.team1Name;
@@ -50,24 +51,8 @@ export class BetComponent implements OnInit, OnDestroy, AfterViewInit {
     ],
   };
 
-  barChartOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top', // Opcional: 'top', 'bottom', 'left', 'right'
-        labels: {
-          font: {
-            size: 12, // Tamaño de fuente de las etiquetas de la leyenda
-          },
-          color: '#000', // Color de las etiquetas de la leyenda
-        },
-      },
-      tooltip: {
-        enabled: true, // Habilita las tooltips si las necesitas
-      },
-    },
-  };
+  // Usamos las opciones del entorno
+  barChartOptions = environment.barChartOptions;
 
   constructor(private betService: BetService) { }
 
