@@ -13,20 +13,20 @@ export const environment = {
   // Gradient for Team 2
   team2GradientStart: '#008000',
   team2GradientEnd: '#00FF00',
-  // Bar chart configuration
+  // Bar chart configuration - Configuración simplificada
   barChartOptions: {
     responsive: true,
-    indexAxis: 'y' as const,
+    indexAxis: 'x',
+    maintainAspectRatio: false,
     scales: {
-      x: {
-        beginAtZero: true,
-        grid: {
-          display: false
-        }
-      },
       y: {
-        grid: {
-          display: false
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        },
+        title: {
+          display: true,
+          text: 'USD'
         }
       }
     },
@@ -34,32 +34,17 @@ export const environment = {
       legend: {
         display: false
       },
-      tooltip: {
-        enabled: true,
-        callbacks: {
-          label: function(context) {
-            return `${context.parsed.x} USD`;
-          }
-        }
+      title: {
+        display: true,
+        text: 'Apuestas por Equipo'
       },
       datalabels: {
         anchor: 'end',
-        align: 'end',
-        formatter: (value: number) => {
-          return `${value} USD`;
-        },
-        color: '#000',
-        font: {
-          weight: 'bold'
-        }
+        align: 'top',
+        formatter: (value: number) => value > 0 ? `${value}` : ''
       }
-    },
-    // Asegurarse de que las barras tengan un ancho fijo
-    barThickness: 30,
-    // Añadir espacio entre las barras
-    barPercentage: 0.8,
-    categoryPercentage: 0.8
-  },
+    }
+  } as const,
   // apiEndpoint: 'https://gyvd9xt7b9.execute-api.us-east-1.amazonaws.com/test'  // Endpoint para desarrollo
   apiEndpoint: 'https://uvji2s0or5.execute-api.us-east-1.amazonaws.com/prod/'
 };

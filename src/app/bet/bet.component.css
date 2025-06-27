@@ -1,27 +1,45 @@
 /* Estilos para las banderas */
 .flag-img {
-  width: 24px;
-  height: 16px;
+  width: 30px;
+  height: 20px;
   object-fit: cover;
   border: 1px solid #ddd;
-  border-radius: 2px;
+  border-radius: 3px;
+  margin-right: 5px;
 }
 
 /* Estilos para el formulario */
 .bet-form {
-  max-width: 400px;
+  max-width: 600px;
   margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Ajustes para los radio buttons */
 .form-check {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: white;
+  border: 1px solid #dee2e6;
 }
 
 /* Ajustes para el gráfico */
 .bar-chart-container {
   position: relative;
   margin: 20px 0;
+}
+
+.chart-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  min-height: 300px;
 }
 
 /* Estilos para los valores en las barras */
@@ -32,13 +50,21 @@
 }
 
 /* Ajustes responsivos */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .bet-form {
-    padding: 0 15px;
+    padding: 15px;
+  }
+  
+  .form-check {
+    padding: 8px;
   }
   
   .flag-img {
-    width: 20px;
-    height: 14px;
+    width: 25px;
+    height: 16px;
+  }
+  
+  .chart-container {
+    padding: 10px;
   }
 }

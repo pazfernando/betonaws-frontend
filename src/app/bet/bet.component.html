@@ -49,13 +49,22 @@
     <mark>Solo se puede aportar una vez por cada resultado <b>por navegador</b></mark>
   </div>
 </form>
-<div class="row">
+<div class="row mt-4">
   <div class="col-12">
-    <button type="button" class="btn btn-secondary float-end" (click)="update_chart()">Actualizar</button>
-  </div>
-  <div class="col-12">
-    <canvas baseChart [data]="barChartData" [options]="environment.barChartOptions" [plugins]="barChartPlugins"
-      [legend]="barChartLegend" [type]="'bar'">
-    </canvas>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4>Estadísticas de Apuestas</h4>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="update_chart()">
+        <i class="bi bi-arrow-clockwise"></i> Actualizar
+      </button>
+    </div>
+    <div class="chart-container" style="position: relative; height: 300px;">
+      <canvas baseChart 
+        [data]="barChartData" 
+        [options]="environment.barChartOptions" 
+        [plugins]="barChartPlugins"
+        [legend]="barChartLegend" 
+        [type]="'bar'">
+      </canvas>
+    </div>
   </div>
 </div>

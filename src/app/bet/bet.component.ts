@@ -3,6 +3,7 @@ import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { BetService } from './bet.service';
 import { environment } from 'src/environments/environment';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-bet',
@@ -21,34 +22,28 @@ export class BetComponent implements OnInit, OnDestroy, AfterViewInit {
   mount: number = 0;
   processing = false;
 
-  barChartValuePlugin = {
-    id: 'barChartValuePlugin',
-    afterDatasetsDraw(chart: any, args: any, options: any) {
-      const { ctx } = chart;
-      chart.data.datasets.forEach((dataset: any, i: number) => {
-        const meta = chart.getDatasetMeta(i);
-        meta.data.forEach((bar: any, index: number) => {
-          const data = Math.trunc(dataset.data[index]);
-          ctx.fillStyle = '#000'; // Color del texto
-          ctx.font = '12px Arial'; // Fuente del texto
-          const position = bar.tooltipPosition();
-          ctx.fillText(data, position.x, position.y - 5);
-        });
-      });
-    },
-  };
+  // Eliminamos el plugin personalizado ya que usaremos chartjs-plugin-datalabels
 
   public barChartLegend = true;
-  barChartPlugins: ChartConfiguration<'bar'>['plugins'] = [this.barChartValuePlugin];
+  barChartPlugins: any[] = [ChartDataLabels];
 
   barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [environment.team1Name, 'Empate', environment.team2Name],
     datasets: [
       {
         data: [this.statsValues['ballenita'], this.statsValues['both'], this.statsValues['playas']],
-        label: 'Bets USD',
+        label: 'USD',
+        backgroundColor: [
+          environment.team1GradientEnd,
+          environment.tieGradientEnd,
+          environment.team2GradientEnd
+        ],
+        borderColor: '#000',
+        borderWidth: 1,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8
       }
-    ],
+    ]
   };
 
   // Usamos las opciones del entorno
@@ -57,14 +52,10 @@ export class BetComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private betService: BetService) { }
 
   ngOnInit(): void {
-    if (this.chart) {
-      this.chart.legend = this.barChartLegend;
-      this.chart.plugins = this.barChartPlugins;
-      this.chart.data = this.barChartData;
-      this.chart.options = this.barChartOptions;
-    }
-
-    this.update_chart();
+    // Forzar la actualización del gráfico
+    setTimeout(() => {
+      this.update_chart();
+    }, 0);
   }
 
   ngAfterViewInit(): void {
@@ -115,20 +106,27 @@ export class BetComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   update_chart = () => {
-    let pos = 0;
-    let proms$ = new Array();
-    ['ballenita', 'both', 'playas'].forEach((_winner) => {
-      let prom$ = this.betService.getStats(_winner);
-      proms$.push(prom$);
-      prom$.then((_res) => {
-        console.log(_winner + ' -> ' + _res.sum + ', pos=' + pos);
+    const proms$ = ['ballenita', 'both', 'playas'].map((_winner) => {
+      return this.betService.getStats(_winner).then((_res) => {
+        console.log(`${_winner} -> ${_res.sum}`);
         this.statsValues[_winner] = _res.sum;
+        return _res.sum;
       });
     });
-    Promise.all(proms$).then((_values) => {
-      this.barChartData.datasets[0].data = [this.statsValues['ballenita'], this.statsValues['both'], this.statsValues['playas']];
-      console.log(this.barChartData.datasets[0].data);
-      this.chart?.update();
+
+    Promise.all(proms$).then((values) => {
+      console.log('Valores actualizados:', values);
+      
+      // Crear un nuevo objeto de datos para forzar la actualización
+      const newData = [...values];
+      
+      // Actualizar los datos del gráfico
+      if (this.chart && this.chart.data && this.chart.data.datasets) {
+        this.chart.data.datasets[0].data = newData;
+        this.chart.update();
+      }
+    }).catch(error => {
+      console.error('Error al actualizar el gráfico:', error);
     });
   }
 }
